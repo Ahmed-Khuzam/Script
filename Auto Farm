@@ -16,7 +16,16 @@ local args = {
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
-game:GetService("Players").LocalPlayer:WaitForChild("Tools")
+local args = {
+    [1] = "SkillsControl",
+    [2] = "Toda",
+    [3] = "C",
+    [4] = "Release",
+    [6] = CFrame.new(-1634.955322265625, 1.3263087272644043, 3367.537109375, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 local args = {
     [1] = "InteractControl",
     [2] = "Quest Giver 41"
