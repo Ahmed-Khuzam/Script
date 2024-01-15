@@ -11,19 +11,21 @@ local args = {
     [2] = "Toda",
     [3] = "C",
     [4] = "Release",
-    [6] = CFrame.new(-1634.955322265625, 1.3263087272644043, 3367.537109375, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+    [6] = CFrame.new(-2014.72412109375, 10.636456489562988, 3532.599609375, -0.656198263168335, 0, 0.7545884847640991, 0, 1, -0, -0.7545886039733887, 0, -0.6561982035636902)
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 local args = {
     [1] = "SkillsControl",
     [2] = "SakunoMohorago",
     [3] = "C",
     [4] = "Release",
-    [6] = CFrame.new(2364.56689453125, 107.62118530273438, -584.69580078125, -0.15763366222381592, 0, 0.9874976277351379, 0, 1, -0, -0.9874977469444275, 0, -0.15763364732265472)
+    [6] = CFrame.new(-2014.595458984375, 10.636457443237305, 3538.794921875, 0.9572420120239258, -1.622817258351006e-08, -0.28928831219673157, -1.3723282954458682e-08, 1, -1.0150661466923339e-07, 0.28928831219673157, 1.0113637927133823e-07, 0.9572420120239258)
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 local args = {
     [1] = "InteractControl",
     [2] = "Quest Giver 41"
