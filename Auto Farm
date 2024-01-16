@@ -24,6 +24,16 @@ local args = {
     [6] = CFrame.new(-2014.595458984375, 10.636457443237305, 3538.794921875, 0.9572420120239258, -1.622817258351006e-08, -0.28928831219673157, -1.3723282954458682e-08, 1, -1.0150661466923339e-07, 0.28928831219673157, 1.0113637927133823e-07, 0.9572420120239258)
 }
 
+local args = {
+    [1] = "SkillsControl",
+    [2] = "GojohUnsealed",
+    [3] = "C",
+    [4] = "Release",
+    [6] = CFrame.new(-1996.762939453125, 28.827838897705078, -10109.5810546875, 0.761053204536438, 0, -0.6486895084381104, -0, 1.0000001192092896, -0, 0.6486895084381104, 0, 0.761053204536438)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
 local args = {
