@@ -7,34 +7,32 @@ local args = {
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
 local args = {
-    [1] = "SkillsControl",
-    [2] = "Toda",
-    [3] = "C",
-    [4] = "Release",
-    [6] = CFrame.new(-2014.72412109375, 10.636456489562988, 3532.599609375, -0.656198263168335, 0, 0.7545884847640991, 0, 1, -0, -0.7545886039733887, 0, -0.6561982035636902)
+    [1] = "CombatControl",
+    [2] = "GojohUnsealed",
+    [3] = 2,
+    [4] = false
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
-
 local args = {
     [1] = "SkillsControl",
     [2] = "SakunoMohorago",
     [3] = "C",
     [4] = "Release",
-    [6] = CFrame.new(-2014.595458984375, 10.636457443237305, 3538.794921875, 0.9572420120239258, -1.622817258351006e-08, -0.28928831219673157, -1.3723282954458682e-08, 1, -1.0150661466923339e-07, 0.28928831219673157, 1.0113637927133823e-07, 0.9572420120239258)
+    [6] = CFrame.new(-2034.9559326171875, 57.93568420410156, -9430.6181640625, -0.9093214869499207, 0.030986962839961052, -0.4149388074874878, -3.456930031120464e-08, 0.9972231984138489, 0.07447110116481781, 0.41609421372413635, 0.06771818548440933, -0.9067964553833008)
 }
 
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 local args = {
     [1] = "SkillsControl",
-    [2] = "GojohUnsealed",
+    [2] = "Toda",
     [3] = "C",
     [4] = "Release",
-    [6] = CFrame.new(-1996.762939453125, 28.827838897705078, -10109.5810546875, 0.761053204536438, 0, -0.6486895084381104, -0, 1.0000001192092896, -0, 0.6486895084381104, 0, 0.761053204536438)
+    [6] = CFrame.new(-2034.9356689453125, 57.93962478637695, -9430.5986328125, -0.8608816266059875, 0.01428020466119051, -0.5086048245429993, -2.032147961017472e-08, 0.9996060729026794, 0.028066184371709824, 0.5088052749633789, 0.024161674082279205, -0.8605425357818604)
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
 local args = {
     [1] = "InteractControl",
