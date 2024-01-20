@@ -7,8 +7,10 @@ game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"
 local args = {
     [1] = "Specs",
     [2] = "Crit Boost",
-    [3] = Vector3.new(31.629234313964844, 9.252900123596191, -22.00274658203125)
+    [3] = Vector3.new(-16.865461349487305, 2.7530407905578613, -331.53289794921875)
 }
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
 local args = {
     [1] = "SkillsControl",
