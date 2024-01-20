@@ -1,0 +1,20 @@
+local args = {
+    [1] = "SkillsControl",
+    [2] = "GojohUnsealed",
+    [3] = "T",
+    [4] = "Release",
+    [6] = CFrame.new(-1971.908203125, 5.534073829650879, -10041.2890625, 0.9992982745170593, 0, 0.0374566875398159, 0, 1, -0, -0.0374566875398159, 0, 0.9992982745170593)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
+local args = {
+    [1] = "SkillsControl",
+    [2] = "SakunoMohorago",
+    [3] = "T",
+    [4] = "Release",
+    [6] = CFrame.new(11.957969665527344, 9.376809120178223, -61.17949295043945, -0.636283278465271, 4.467890235559935e-08, -0.7714554667472839, 7.809688895576983e-09, 1, 5.147377635239536e-08, 0.7714554667472839, 2.6727075663757205e-08, -0.636283278465271)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
