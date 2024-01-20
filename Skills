@@ -7,6 +7,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"
     [2] = "Crit Boost",
     [3] = Vector3.new(31.629234313964844, 9.252900123596191, -22.00274658203125)
 }
+
 local args = {
     [1] = "SkillsControl",
     [2] = "GojohUnsealed",
@@ -19,6 +20,7 @@ local args = {
     [1] = "SkillsControl",
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 local args = {
     [1] = "SkillsControl",
     [2] = "SakunoMohorago",
@@ -29,6 +31,7 @@ local args = {
 
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
 local args = {
     [1] = "SkillsControl",
     [2] = "Toda",
@@ -38,5 +41,3 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
-
-
