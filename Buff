@@ -24,3 +24,13 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
+local args = {
+    [1] = "SkillsControl",
+    [2] = "YutoSword",
+    [3] = "V",
+    [4] = "Release",
+    [6] = CFrame.new(-2015.5743408203125, 5.512819290161133, -10188.646484375, -0.7663543224334717, 0.0016957834595814347, -0.6424158811569214, 0.002708138432353735, 0.9999961853027344, -0.0005909204483032227, 0.6424124240875244, -0.0021926057524979115, -0.7663559317588806)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
