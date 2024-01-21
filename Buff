@@ -1,1 +1,28 @@
+local args = {
+    [1] = "Specs",
+    [2] = "Nine Tails Power",
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
+local args = {
+local args = {
+    [1] = "SkillsControl",
+    [2] = "GojohUnsealed",
+    [3] = "V",
+    [4] = "Release",
+    [6] = CFrame.new(-1996.762939453125, 28.830053329467773, -10109.5810546875, 0.7665979862213135, -1.0788017590357413e-08, -0.6421273946762085, -1.4082869981280055e-08, 1, -3.361314071526067e-08, 0.6421273946762085, 3.481076049638432e-08, 0.7665979862213135)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+
+local args = {
+    [1] = "SkillsControl",
+    [2] = "SakunoMohorago",
+    [3] = "V",
+    [4] = "Release",
+    [6] = CFrame.new(2364.56689453125, 107.62118530273438, -584.69580078125, -0.15763366222381592, 0, 0.9874976277351379, 0, 1, -0, -0.9874977469444275, 0, -0.15763364732265472)
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
 
