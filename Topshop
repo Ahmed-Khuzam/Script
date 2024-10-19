@@ -1,0 +1,171 @@
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Top City",
+    SubTitle = "By Ahmed",
+    TabWidth = 100,
+    Size = UDim2.fromOffset(320, 170),
+    Acrylic = true,
+    Theme = "Dark"
+})
+
+-- Tab for Kill Options
+local Tab1 = Window:AddTab({ Title = "قتل تلقائي", Icon = "" })
+
+-- Variable to store the target player's name
+local playerName = ""
+
+-- Textbox for entering the target player's username
+Tab1:AddInput("Input", {
+    Title = "",
+    Default = "",
+    Placeholder = "Enter username",
+    Numeric = false,
+    Finished = false,
+    Callback = function(Value)
+        playerName = Value  -- Update the playerName variable with user input
+        print("Target set to: " .. playerName)
+    end
+})
+
+-- Kill Button
+Tab1:AddButton({
+    Title = "قتل الاعب",
+    Callback = function()
+        local localPlayer = game.Players.LocalPlayer
+        local weapon = localPlayer.Character:FindFirstChildOfClass("Tool")
+
+        if weapon and playerName ~= "" then
+            for i = 1, 4 do
+                local targetPlayer = game.Players:FindFirstChild(playerName)
+
+                if targetPlayer and targetPlayer.Character then
+                    local args = {
+                        [1] = weapon,
+                        [2] = {
+                            ["p"] = Vector3.new(635.4351806640625, 37.73330307006836, -783.640625),
+                            ["pid"] = 1,
+                            ["part"] = targetPlayer.Character.HumanoidRootPart,
+                            ["d"] = 43.0,
+                        }
+                    }
+
+                    game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
+                else
+                    print("Target player not found.")
+                    break
+                end
+            end
+        else
+            print("Weapon not found or player name is empty.")
+        end
+    end
+})
+
+-- Kill Button 2
+Tab1:AddButton({
+    Title = "قتل الاعب2",
+    Callback = function()
+        local localPlayer = game.Players.LocalPlayer
+        local weapon = localPlayer.Character:FindFirstChildOfClass("Tool")
+
+        if weapon and playerName ~= "" then
+            for i = 1, 1 do
+                local targetPlayer = game.Players:FindFirstChild(playerName)
+
+                if targetPlayer and targetPlayer.Character then
+                    local args = {
+                        [1] = weapon,
+                        [2] = {
+                            ["p"] = Vector3.new(635.4351806640625, 37.73330307006836, -783.640625),
+                            ["pid"] = 1,
+                            ["part"] = targetPlayer.Character.HumanoidRootPart,
+                            ["d"] = 43.0,
+                        }
+                    }
+
+                    game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
+                else
+                    print("Target player not found.")
+                    break
+                end
+            end
+        else
+            print("Weapon not found or player name is empty.")
+        end
+    end
+})
+
+-- New Tab for Tree Options
+local Tab2 = Window:AddTab({ Title = "التجميع", Icon = "" })
+
+-- Max Button for Wine
+Tab2:AddButton({
+    Title = "العنب",
+    Callback = function()
+        local prompts = {
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[18].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[16].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[9].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[15].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[14].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[13].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[12].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[11].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[8].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[17].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[10].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[4].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[5].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[6].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[7].Prompt,
+            workspace.MyScripts.WorldMats.WineFarm.GraphTree.Prompt,
+        }
+
+        for _, prompt in ipairs(prompts) do
+            prompt.HoldDuration = 0
+            prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+        end
+
+        -- Set MaxActivationDistance for each prompt
+        local maxActivationDistance = 10000
+        for _, child in ipairs(workspace.MyScripts.WorldMats.WineFarm:GetChildren()) do
+            local prompt = child:FindFirstChildOfClass("ProximityPrompt")
+            if prompt then
+                prompt.MaxActivationDistance = maxActivationDistance
+                prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+            end
+        end
+
+        print("All tree prompts have been updated.")
+    end
+})
+
+-- New Button for Stones
+Tab2:AddButton({
+    Title = "تجميع الصخر",
+    Callback = function()
+        local stones = workspace.MyScripts.WorldMats.Stones
+
+        -- Loop through indices 0 to 100
+        for index = 0, 100 do
+            local child = stones:GetChildren()[index + 1]  -- +1 for 1-based indexing
+            if child and child:FindFirstChild("Prompt") then
+                local proximityPrompt = child.Prompt:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    proximityPrompt.HoldDuration = 0
+                    proximityPrompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+                    proximityPrompt.MaxActivationDistance = 10000
+                end
+            end
+        end
+
+        print("All stone prompts have been updated.")
+    end
+})
+
+Fluent:Notify({
+    Title = "السكربت",
+    Content = "The script has been loaded.",
+    Duration = 5
+})
