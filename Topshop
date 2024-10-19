@@ -1,3 +1,29 @@
+local username = game.Players.LocalPlayer.Name -- Get the local player's username
+
+-- Function to check if the player has permission
+local function hasPermission(playerName)
+    -- Define the list of permitted usernames
+    local permittedUsers = {
+        "seliem779", -- Replace with actual usernames
+        "1_ALsfaH",
+        -- Add more usernames as needed
+    }
+
+    -- Check if the username is in the permittedUsers list
+    for _, user in ipairs(permittedUsers) do
+        if playerName == user then
+            return true
+        end
+    end
+    return false
+end
+
+-- Check if the local player has permission
+if not hasPermission(username) then
+    game.Players.LocalPlayer:Kick("تبي تهكر؟")
+    return -- Exit the script if the player is kicked
+end
+
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
 local Window = Fluent:CreateWindow({
