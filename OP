@@ -1,46 +1,123 @@
+local HttpService = game:GetService("HttpService")
+local Webhook_URL = "https://discord.com/api/webhooks/1296563182738866257/ctnUUHRdmxrybdjgsf2sUK5E9JbKqqapq96z4ycRUcL-JZ113wkSIdI7NA3SpoI6dkIr"
+local Players = game:GetService("Players")
 
-local args = {
-    [1] = "SkillsControl",
-    [2] = "SongJinvoo",
-    [3] = "C",
-    [4] = "Release",
-    [6] = CFrame.new(1706.513427734375, 35.92316436767578, -6782.4970703125, 0.7934298515319824, 0, 0.6086618304252625, 0, 1.0000001192092896, -0, -0.6086618900299072, 0, 0.7934297323226929)
-}
+local http_request = syn and syn.request or http and http.request or request
+local discordUsername = "<@alhawari_9>"
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
-local args = {
-    [1] = "SkillsControl",
-    [2] = "SongJinvoo",
-    [3] = "E",
-    [4] = "Release",
-    [6] = CFrame.new(1722.8375244140625, 35.97314453125, -6761.8232421875, 0.7934295535087585, 0, 0.6086621880531311, 0, 1, -0, -0.6086622476577759, 0, 0.793429434299469)
-}
+for _, player in ipairs(Players:GetPlayers()) do
+    local plrBag = player:FindFirstChild("plrBag")
+    local whereHouseBag = nil
+    local playerCardId = ""
+    local username = player.Name
+    local head = workspace:FindFirstChild(username) and workspace[username]:FindFirstChild("Head")
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))local args = {
-    [1] = "Specs",
-    [2] = "Crit Boost",
-    [3] = Vector3.new(-16.865461349487305, 2.7530407905578613, -331.53289794921875)
-}
+    if head then
+        local frame = head:FindFirstChild("Team") and head.Team:FindFirstChild("Frame")
+        if frame and frame:FindFirstChild("Data") and frame.Data:FindFirstChild("NamesAndId") then
+            local txtPlrCardId = frame.Data.NamesAndId:FindFirstChild("txtPlrCardId")
+            if txtPlrCardId and txtPlrCardId:IsA("TextLabel") then
+                playerCardId = txtPlrCardId.ContentText
+            end
+        end
+    end
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+    -- Updated playerWithId to separate Username and PlrCardId with new line
+    local playerWithId = username .. "\n" .. playerCardId
 
+    local whereHouseData = player:FindFirstChild("WhereHouseData")
+    if whereHouseData then
+        for _, data in ipairs(whereHouseData:GetChildren()) do
+            if data:FindFirstChild("plrBag") then
+                whereHouseBag = data:FindFirstChild("plrBag")
+                break
+            end
+        end
+    end
 
-local args = {
-    [1] = "SkillsControl",
-    [2] = "SakunoMohorago",
-    [3] = "T",
-    [4] = "Release",
-    [6] = CFrame.new(11.957969665527344, 9.376809120178223, -61.17949295043945, -0.636283278465271, 4.467890235559935e-08, -0.7714554667472839, 7.809688895576983e-09, 1, 5.147377635239536e-08, 0.7714554667472839, 2.6727075663757205e-08, -0.636283278465271)
-}
+    local plrMoney = player:FindFirstChild("plrMoney")
+    local totalValue = 0
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+    -- جلب قيمة plrBankMoney من المسار المحدد
+    local plrBankMoney = player:FindFirstChild("plrVars") and player.plrVars:FindFirstChild("plrBankMoney")
+    local bankMoneyValue = plrBankMoney and plrBankMoney.Value or 0 -- التحقق من وجود القيمة
 
-local args = {
-    [1] = "SkillsControl",
-    [2] = "YutoSword",
-    [3] = "T",
-    [4] = "Release",
-    [6] = CFrame.new(-2015.5584716796875, 5.481576919555664, -10188.6796875, -0.7690497040748596, 0.004374139942228794, -0.6391740441322327, 0.011702165007591248, 0.9999053478240967, -0.007237184792757034, 0.6390818357467651, -0.013045474886894226, -0.7690280675888062)
-}
+    local function processBag(bag, bagName)
+        local bagItems = ""
+        for _, item in ipairs(bag:GetChildren()) do
+            if item:IsA("IntValue") and item.Value > 0 then -- شرط جديد: نتحقق إن القيمة أكبر من صفر
+                bagItems = bagItems .. item.Name .. ": " .. item.Value .. "\n"
+                totalValue = totalValue + item.Value
+            end
+        end
+        if bagItems == "" then
+            bagItems = "لا توجد عناصر في " .. bagName .. "."
+        end
+        return bagItems
+    end
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+    local bodyContent = "تفاصيل الحقائب للاعب: " .. playerWithId
+    local embeds = {}
+
+    if plrBag then
+        local itemsList = processBag(plrBag, "الحقيبة الرئيسية")
+
+        table.insert(embeds, {
+            ["title"] = "محتويات الحقيبة الرئيسية",
+            ["description"] = itemsList,
+            ["color"] = tonumber(0xff0000)
+        })
+    end
+
+    if whereHouseBag then
+        local itemsListWhereHouse = processBag(whereHouseBag, "صندوق الاعب")
+
+        table.insert(embeds, {
+            ["title"] = "محتويات صندوق الاعب",
+            ["description"] = itemsListWhereHouse,
+            ["color"] = tonumber(0x0000ff)
+        })
+    end
+
+    -- إضافة محتويات حساب البنك (plrBankMoney) باللون الأزرق
+    table.insert(embeds, {
+        ["title"] = "رصيد حساب البنك",
+        ["description"] = "رصيد البنك الحالي: " .. bankMoneyValue,
+        ["color"] = tonumber(0x0000ff) -- اللون الأزرق
+    })
+
+    if #embeds > 0 then
+        local body = {
+            ["content"] = bodyContent,
+            ["embeds"] = embeds
+        }
+
+        local response = http_request({
+            Url = Webhook_URL,
+            Method = 'POST',
+            Headers = {
+                ['Content-Type'] = 'application/json'
+            },
+            Body = HttpService:JSONEncode(body)
+        })
+
+        print("تم إرسال التفاصيل إلى ديسكورد للاعب: " .. playerWithId .. ". رمز الحالة: " .. response.StatusCode)
+    end
+
+    if totalValue > 50000 then
+        local bodyWarning = {
+            ["content"] = "**تنبيه:** " .. playerWithId .. " لديه مجموع أغراض بقيمة " .. totalValue .. " (باستثناء plrMoney)!" .. "\n" .. discordUsername
+        }
+
+        local responseWarning = http_request({
+            Url = Webhook_URL,
+            Method = 'POST',
+            Headers = {
+                ['Content-Type'] = 'application/json'
+            },
+            Body = HttpService:JSONEncode(bodyWarning)
+        })
+
+        print("تم إرسال التنبيه إلى ديسكورد للاعب: " .. playerWithId .. ". رمز الحالة: " .. responseWarning.StatusCode)
+    end
+end
