@@ -1,44 +1,73 @@
-local args = {
-    [1] = "Awaken"
-}
+local HttpService = game:GetService("HttpService")
+local Webhook_URL = "https://discord.com/api/webhooks/1296563182738866257/ctnUUHRdmxrybdjgsf2sUK5E9JbKqqapq96z4ycRUcL-JZ113wkSIdI7NA3SpoI6dkIr"
+local Players = game:GetService("Players")
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))local args = {
-    [1] = "Specs",
-    [2] = "Crit Boost",
-    [3] = Vector3.new(31.629234313964844, 9.252900123596191, -22.00274658203125)
-}
-local args = {
-    [1] = "SkillsControl",
-    [2] = "GojohUnsealed",
-    [3] = "C",
-    [4] = "Release",
-    [6] = CFrame.new(-1968.7926025390625, -4.01530647277832, -9639.3408203125, 0.8909062147140503, 2.962722689403563e-08, 0.4541873335838318, 7.134739909986365e-09, 1, -7.922636768853408e-08, -0.4541873335838318, 7.382377020803688e-08, 0.8909062147140503)
-}
+local http_request = syn and syn.request or http and http.request or request
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
-local args = {
-    [1] = "SkillsControl",
-    [2] = "SakunoMohorago",
-    [3] = "C",
-    [4] = "Release",
-    [6] = CFrame.new(-2034.9559326171875, 57.93568420410156, -9430.6181640625, -0.9093214869499207, 0.030986962839961052, -0.4149388074874878, -3.456930031120464e-08, 0.9972231984138489, 0.07447110116481781, 0.41609421372413635, 0.06771818548440933, -0.9067964553833008)
-}
+local targetCardId = ""  
+local reason = ""  
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
-local args = {
-    [1] = "SkillsControl",
-    [2] = "Toda",
-    [3] = "C",
-    [4] = "Release",
-    [6] = CFrame.new(-2034.9356689453125, 57.93962478637695, -9430.5986328125, -0.8608816266059875, 0.01428020466119051, -0.5086048245429993, -2.032147961017472e-08, 0.9996060729026794, 0.028066184371709824, 0.5088052749633789, 0.024161674082279205, -0.8605425357818604)
-}
+local function sendToDiscord(plrIdValue, playerName, reason, messages)
+    local content = "Card ID: " .. plrIdValue .. "\n" ..
+                    "Player Name: " .. playerName .. "\n" ..
+                    "Reason: " .. reason .. "\n\n" ..
+                    "Messages:\n" .. messages
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+    local body = {
+        ["embeds"] = {
+            {
+                ["title"] = "Player Information",
+                ["description"] = content,
+                ["color"] = tonumber(0xff0000)
+            }
+        }
+    }
 
+    local response = http_request({
+        Url = Webhook_URL,
+        Method = 'POST',
+        Headers = {
+            ['Content-Type'] = 'application/json'
+        },
+        Body = HttpService:JSONEncode(body)
+    })
 
-local args = {
-    [1] = "InteractControl",
-    [2] = "Quest Giver 47"
-}
+    print("Message sent to Discord. Status code: " .. response.StatusCode)
+end
 
-game:GetService("ReplicatedStorage"):WaitForChild("Game"):WaitForChild("Remotes"):WaitForChild("ServerHandler"):FireServer(unpack(args))
+local function findPlayerByCardId(cardId)
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player:FindFirstChild("plrVars") and player.plrVars:FindFirstChild("plrCardId") then
+            local playerCardId = player.plrVars.plrCardId.Value
+            if tostring(playerCardId) == tostring(cardId) then
+                return player
+            end
+        end
+    end
+    return nil
+end
+
+-- قم بإضافة هذه الدالة للحصول على جميع الرسائل المرسلة من اللاعب
+local function getPlayerMessages(player)
+    local playerMessages = {}
+    for _, logMessage in ipairs(ChatLog) do
+        if logMessage:find(player.Name) then
+            table.insert(playerMessages, logMessage)
+        end
+    end
+    return table.concat(playerMessages, "\n")
+end
+
+local foundPlayer = findPlayerByCardId(targetCardId)
+
+if foundPlayer then
+    local playerCardId = foundPlayer.plrVars.plrCardId.Value
+    local playerName = foundPlayer.Name
+    local messages = getPlayerMessages(foundPlayer)
+
+    print("Found player: " .. playerName)
+
+    sendToDiscord(playerCardId, playerName, reason, messages)
+else
+    print("No player found with the specified plrCardId: " .. targetCardId)
+end
