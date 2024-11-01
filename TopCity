@@ -1,4 +1,4 @@
--- Anti-cheat event bypass script
+-- Anti-cheat event bypass script with remote blocking
 local eventbypass
 
 eventbypass = hookmetamethod(game, "__namecall", function(self, ...)
@@ -6,17 +6,10 @@ eventbypass = hookmetamethod(game, "__namecall", function(self, ...)
 
     if not checkcaller() then
         if method == "FireServer" then
-            local name = tonumber(self.Name)
-            local parentName = tonumber(self.Parent.Name)
-            
-            if (name and name >= 1000 and name <= 9999) or self.Name == "7486" then
-                print("Blocked remote call to:", self.Name, "in group:", self.Parent.Name)
-                return wait(9e9)
-            end
-
-            if self.Name == "AC_Event" then
-                print("AC_Event remote was called and blocked.")
-                return wait(9e9)
+            -- Check if this remote is not in the ignored list and block it if detected
+            if knownRemotes[self:GetDebugId()] then
+                print("Blocked remote call to:", self.Name)
+                return wait(9e9)  -- Block the remote by pausing execution indefinitely
             end
         end
     end
@@ -63,26 +56,129 @@ else
     warn("Player '1_ALsfaH' not found.")
 end
 
--- Detect and print all remotes within the specified range and the "7486" remote in ReplicatedStorage
-local replicatedStorage = game:GetService("ReplicatedStorage")
-local remotes = replicatedStorage:FindFirstChild("Remotes")
+-- Remote detection with ignore list and blocking mechanism
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local targetParent = ReplicatedStorage:FindFirstChild("Remotes")
 
-if remotes then
-    local remote7486 = remotes:FindFirstChild("7486")
-    if remote7486 then
-        print("Found specific remote: 7486")
-    end
-    
-    for i = 1000, 9999 do
-        local remoteGroup = remotes:FindFirstChild(tostring(i))
-        
-        if remoteGroup then
-            for j = 1000, 9999 do
-                local specificRemote = remoteGroup:FindFirstChild(tostring(j))
-                
-                if specificRemote then
-                    print("Found remote:", specificRemote.Name, "inside group:", remoteGroup.Name)
-                end
+-- List of remotes to ignore by their name
+local ignoredRemotes = {
+    "AcceptTradeRequestEvent",
+    "AdminAppEvent",
+    "AdminBtnsrEvent",
+    "AlrajhiAppEvent",
+    "AlrajhiWithdrawDeposit",
+    "AsefneAcceptEvent",
+    "AsefneFinishEvent",
+    "AsefneRequestEvent",
+    "BanAppCheakBanEvent",
+    "BanAppGiveBanEvent",
+    "BanAppRemvBanEvent",
+    "BuyClothEvent",
+    "BuyShopEvent",
+    "CancelTradeRequestEvent",
+    "CarShopSellEvent",
+    "CarShopSpawnEvent",
+    "CarsGarageSpawnEvent",
+    "CarsShopBuyEvent",
+    "ChangeGuiTextAndColorEvent",
+    "ChangeGuiVisibleEvent",
+    "ChangePlayerCameraEvent",
+    "ChangeServerPropertiesEvent",
+    "CloseTradeRequestEvent",
+    "ClothsShopBuyEvent",
+    "ClothsShopCharsBtnEvent",
+    "ClothsShopRestCharEvent",
+    "ClothsShopUpdateCharEvent",
+    "ClothsShopUpdateGuiEvent",
+    "ClothsShopUseEvent",
+    "CraftItemCraftingTableEvent",
+    "CreateCharFinishEvent",
+    "CreateNewToolEvent",
+    "CreateCharUpdateEvent",
+    "CropPlantEvent",
+    "DeliverCargoEvent",
+    "DisablePlayerEvent",
+    "DoctorReviveEvent",
+    "DoctorHealEvent",
+    "DrawWayPointsEvent",
+    "FinishTradeRequestEvent",
+    "FireJobMemberListEvent",
+    "ForceStopAnimsEvent",
+    "GetJobMemberListEvent",
+    "GiveFineEvent",
+    "GivePlayerJobPointsEvent",
+    "GiveReportEvent",
+    "GvePlayerBehivePointsEvent",
+    "HideShowClothsEvent",
+    "HumPropValidEvent",
+    "InventoryAddToolEvent",
+    "InventoryDestroyEvent",
+    "InventoryGetTargetEvent",
+    "InventoryRemvToolEvent",
+    "InventoryRighClickEvent",
+    "InventorySwapEvent",
+    "JobDeviceFireEvent",
+    "JobDeviceHairEvent",
+    "JobSelectEvent",
+    "JobUpgradeEvent",
+    "KidnappingEvent",
+    "LockTradeRequestEvent",
+    "LockpickPrisonOpen",
+    "LockpickTargetUnlockEvent",
+    "MoveToolToBagEvent",
+    "OpenGarageJobEvent",
+    "OpenShopEvent",
+    "OpenWhereHouseEvent",
+    "PartPropValidEvent",
+    "PickupCargoEvent",
+    "PlayAnimsEvent",
+    "PlaySoundToPlayerEvent",
+    "PlayerPrisonFromDiffScript",
+    "PoliceCarryEvent",
+    "PoliceGiveFine",
+    "PoliceHandCuffEvent",
+    "PoliceSendPrisonEvent",
+    "PoliceSerchEvent",
+    "PoliceUnHandCuffEvent",
+    "PopGuiEvent",
+    "ProfileRestStateEvent",
+    "ProfileUpStateEvent",
+    "RadioEnterEvent",
+    "RadioLeaveEvent",
+    "RadioSendMsgEvent",
+    "ReducePlayerLaborEvent",
+    "ReflectTradeRequestEvent",
+    "ResourceSellEvent",
+    "RunWorldEvent",
+    "SalaryNotifiyEvent",
+    "SendTradeRequestEvent",
+    "ShopGemsBuyEvents",
+    "StealShopEvent",
+    "SpawnGarageJobEvent",
+    "StoreCarToPlrCarsEvent",
+    "ToolHealthReduceClintEvent",
+    "ToolHealthReduceServerEvent",
+    "UnHandCuffGuiBtnEvent",
+    "UpDateVipJobsEvent",
+    "changeClientPropertiesEvent"
+}
+
+-- Table to store last known names of detected remotes
+local knownRemotes = {}
+
+-- Check each remote once and block if not ignored
+if targetParent then
+    for _, child in pairs(targetParent:GetChildren()) do
+        if child:IsA("RemoteEvent") then
+            local currentName = child.Name
+
+            -- Skip and allow if the remote is in the ignored list
+            if not table.find(ignoredRemotes, currentName) then
+                -- Print the remote's name if it's not in the ignored list
+                print("Detected and blocked remote: " .. currentName)
+
+                -- Store this remote in knownRemotes for blocking in the eventbypass
+                knownRemotes[child:GetDebugId()] = currentName
             end
         end
     end
