@@ -1,148 +1,93 @@
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Anti-cheat event bypass script
+local eventbypass
 
-local Window = Fluent:CreateWindow({
-    Title = "Top City",
-    SubTitle = "By Ahmed",
-    TabWidth = 100,
-    Size = UDim2.fromOffset(320, 170),
-    Acrylic = true,
-    Theme = "Dark"
-})
+eventbypass = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
 
--- Tab for Kill Options
-local Tab1 = Window:AddTab({ Title = "قتل تلقائي", Icon = "" })
+    if not checkcaller() then
+        if method == "FireServer" then
+            local name = tonumber(self.Name)
+            local parentName = tonumber(self.Parent.Name)
+            
+            if (name and name >= 1000 and name <= 9999) or self.Name == "7486" then
+                print("Blocked remote call to:", self.Name, "in group:", self.Parent.Name)
+                return wait(9e9)
+            end
 
--- Variable to store the target player's name
-local playerName = ""
-
--- Textbox for entering the target player's username
-Tab1:AddInput("Input", {
-    Title = "",
-    Default = "",
-    Placeholder = "Enter username",
-    Numeric = false,
-    Finished = false,
-    Callback = function(Value)
-        playerName = Value  -- Update the playerName variable with user input
-        print("Target set to: " .. playerName)
+            if self.Name == "AC_Event" then
+                print("AC_Event remote was called and blocked.")
+                return wait(9e9)
+            end
+        end
     end
-})
 
--- Kill Button
-Tab1:AddButton({
-    Title = "قتل الاعب",
-    Callback = function()
-        local localPlayer = game.Players.LocalPlayer
-        local weapon = localPlayer.Character:FindFirstChildOfClass("Tool")
+    return eventbypass(self, ...)
+end)
 
-        if weapon and playerName ~= "" then
-            for i = 1, 4 do
-                local targetPlayer = game.Players:FindFirstChild(playerName)
+-- Get player and disable specified scripts
+local PlayersService = game:GetService("Players")
+local player = PlayersService:FindFirstChild("1_ALsfaH")
 
-                if targetPlayer and targetPlayer.Character then
-                    local args = {
-                        [1] = weapon,
-                        [2] = {
-                            ["p"] = Vector3.new(635.4351806640625, 37.73330307006836, -783.640625),
-                            ["pid"] = 1,
-                            ["part"] = targetPlayer.Character.HumanoidRootPart,
-                            ["d"] = 43.0,  -- Set damage to 80% of 54.74
-                        }
-                    }
+if player then
+    local playerScripts = player:FindFirstChild("PlayerScripts")
+    
+    if playerScripts then
+        local acBackup = playerScripts:FindFirstChild("AC_Backup")
+        local acPlayer = playerScripts:FindFirstChild("AC_Player")
+        local playerControl = playerScripts:FindFirstChild("PlayerControl")
 
-                    game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
-                else
-                    print("Target player not found.")
-                    break
+        if acBackup then
+            acBackup.Disabled = true
+            print("Disabled script:", acBackup:GetFullName())
+        else
+            warn("AC_Backup script not found.")
+        end
+
+        if acPlayer then
+            acPlayer.Disabled = true
+            print("Disabled script:", acPlayer:GetFullName())
+        else
+            warn("AC_Player script not found.")
+        end
+
+        if playerControl then
+            playerControl.Disabled = true
+            print("Disabled script:", playerControl:GetFullName())
+        else
+            warn("PlayerControl script not found.")
+        end
+    else
+        warn("PlayerScripts not found in the player.")
+    end
+else
+    warn("Player '1_ALsfaH' not found.")
+end
+
+-- Detect and print all remotes within the specified range and the "7486" remote in ReplicatedStorage
+local replicatedStorage = game:GetService("ReplicatedStorage")
+local remotes = replicatedStorage:FindFirstChild("Remotes")
+
+if remotes then
+    local remote7486 = remotes:FindFirstChild("7486")
+    if remote7486 then
+        print("Found specific remote: 7486")
+    end
+    
+    for i = 1000, 9999 do
+        local remoteGroup = remotes:FindFirstChild(tostring(i))
+        
+        if remoteGroup then
+            for j = 1000, 9999 do
+                local specificRemote = remoteGroup:FindFirstChild(tostring(j))
+                
+                if specificRemote then
+                    print("Found remote:", specificRemote.Name, "inside group:", remoteGroup.Name)
                 end
             end
-        else
-            print("Weapon not found or player name is empty.")
         end
     end
-})
+else
+    print("No 'Remotes' folder found in ReplicatedStorage.")
+end
 
--- Kill Button 2
-Tab1:AddButton({
-    Title = "قتل الاعب2",
-    Callback = function()
-        local localPlayer = game.Players.LocalPlayer
-        local weapon = localPlayer.Character:FindFirstChildOfClass("Tool")
-
-        if weapon and playerName ~= "" then
-            for i = 1, 1 do
-                local targetPlayer = game.Players:FindFirstChild(playerName)
-
-                if targetPlayer and targetPlayer.Character then
-                    local args = {
-                        [1] = weapon,
-                        [2] = {
-                            ["p"] = Vector3.new(635.4351806640625, 37.73330307006836, -783.640625),
-                            ["pid"] = 1,
-                            ["part"] = targetPlayer.Character.HumanoidRootPart,
-                            ["d"] = 43.0,  -- Set damage to 80% of 54.74
-                        }
-                    }
-
-                    game:GetService("ReplicatedStorage").WeaponsSystem.Network.WeaponHit:FireServer(unpack(args))
-                else
-                    print("Target player not found.")
-                    break
-                end
-            end
-        else
-            print("Weapon not found or player name is empty.")
-        end
-    end
-})
-
--- New Tab for Tree Options
-local Tab2 = Window:AddTab({ Title = "التجميع", Icon = "" })
-
--- Max Button
-Tab2:AddButton({
-    Title = "العنب",
-    Callback = function()
-        local prompts = {
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[18].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[16].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[9].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[15].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[14].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[13].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[12].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[11].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[8].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[17].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[10].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[4].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[5].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[6].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm:GetChildren()[7].Prompt,
-            workspace.MyScripts.WorldMats.WineFarm.GraphTree.Prompt,
-        }
-
-        for _, prompt in ipairs(prompts) do
-            prompt.HoldDuration = 0
-            prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
-        end
-
-        -- Set MaxActivationDistance for each prompt
-        local maxActivationDistance = 10000
-        for _, child in ipairs(workspace.MyScripts.WorldMats.WineFarm:GetChildren()) do
-            local prompt = child:FindFirstChildOfClass("ProximityPrompt")
-            if prompt then
-                prompt.MaxActivationDistance = maxActivationDistance
-                prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
-            end
-        end
-
-        print("All tree prompts have been updated.")
-    end
-})
-
-Fluent:Notify({
-    Title = "السكربت",
-    Content = "The script has been loaded.",
-    Duration = 5
-})
+print("Script execution completed.")
