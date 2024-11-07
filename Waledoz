@@ -1,0 +1,118 @@
+local DataStoreService = game:GetService("DataStoreService")
+local playerDataStore = DataStoreService:GetDataStore("DailyRewardDataStore")
+
+local timezoneOffset = 3
+local resetHour = 12
+
+local tasks = {
+    {task = "اقتل 5 شرطة", target = 5, item = "Police", action = "Kill", reward = 100},
+    {task = "كلبش أحد", target = 1, item = "Handcuff", action = "Handcuff", reward = 50},
+    {task = "جمع 5 مسدسات", target = 5, item = "Gun", action = "Collect", reward = 75},
+    {task = "دمّر 3 سيارات", target = 3, item = "Car", action = "Destroy", reward = 150},
+    {task = "اقتل 2 مافيا", target = 2, item = "Mafia", action = "Kill", reward = 200}
+}
+
+local function chooseRandomTasks()
+    local randomTasks = {}
+    local numTasks = math.random(2, #tasks)
+    
+    for i = 1, numTasks do
+        local task = tasks[math.random(1, #tasks)]
+        table.insert(randomTasks, task)
+    end
+    
+    return randomTasks
+end
+
+local function completeTask(player, currentTask)
+    local success = false
+    if currentTask.action == "Kill" then
+        local kills = player.leaderstats.PoliceKills.Value + player.leaderstats.MafiaKills.Value
+        if kills >= currentTask.target then
+            player.leaderstats.Cash.Value = player.leaderstats.Cash.Value + currentTask.reward
+            success = true
+        end
+    elseif currentTask.action == "Handcuff" then
+        local handcuffsUsed = player.leaderstats.HandcuffsUsed.Value
+        if handcuffsUsed >= currentTask.target then
+            player.leaderstats.Cash.Value = player.leaderstats.Cash.Value + currentTask.reward
+            success = true
+        end
+    elseif currentTask.action == "Collect" then
+        local gunCount = player.Backpack:FindFirstChild("Gun") and player.Backpack.Gun.Value or 0
+        if gunCount >= currentTask.target then
+            player.leaderstats.Cash.Value = player.leaderstats.Cash.Value + currentTask.reward
+            success = true
+        end
+    elseif currentTask.action == "Destroy" then
+        local carsDestroyed = player.leaderstats.CarsDestroyed.Value
+        if carsDestroyed >= currentTask.target then
+            player.leaderstats.Cash.Value = player.leaderstats.Cash.Value + currentTask.reward
+            success = true
+        end
+    end
+    return success
+end
+
+local function checkAndResetTasks()
+    local currentTime = os.time()
+    local currentHour = tonumber(os.date("%H", currentTime + timezoneOffset * 3600))
+    if currentHour == resetHour then
+        for _, player in pairs(game.Players:GetPlayers()) do
+            local randomTasks = chooseRandomTasks()
+            player:SetAttribute("CurrentTasks", randomTasks)
+        end
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    local stats = Instance.new("Folder")
+    stats.Name = "leaderstats"
+    stats.Parent = player
+    
+    local policeKills = Instance.new("IntValue")
+    policeKills.Name = "PoliceKills"
+    policeKills.Value = 0
+    policeKills.Parent = stats
+
+    local mafiaKills = Instance.new("IntValue")
+    mafiaKills.Name = "MafiaKills"
+    mafiaKills.Value = 0
+    mafiaKills.Parent = stats
+
+    local handcuffsUsed = Instance.new("IntValue")
+    handcuffsUsed.Name = "HandcuffsUsed"
+    handcuffsUsed.Value = 0
+    handcuffsUsed.Parent = stats
+    
+    local carsDestroyed = Instance.new("IntValue")
+    carsDestroyed.Name = "CarsDestroyed"
+    carsDestroyed.Value = 0
+    carsDestroyed.Parent = stats
+    
+    local cash = Instance.new("IntValue")
+    cash.Name = "Cash"
+    cash.Value = 0
+    cash.Parent = stats
+
+    local randomTasks = chooseRandomTasks()
+    player:SetAttribute("CurrentTasks", randomTasks)
+end)
+
+while true do
+    wait(60)
+    checkAndResetTasks()
+    
+    for _, player in pairs(game.Players:GetPlayers()) do
+        local currentTasks = player:GetAttribute("CurrentTasks")
+        if currentTasks then
+            for _, currentTask in ipairs(currentTasks) do
+                if completeTask(player, currentTask) then
+                    print(player.Name .. " أكمل المهمة " .. currentTask.task)
+                    local randomTasks = chooseRandomTasks()
+                    player:SetAttribute("CurrentTasks", randomTasks)
+                end
+            end
+        end
+    end
+end
