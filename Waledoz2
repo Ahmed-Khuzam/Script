@@ -1,0 +1,189 @@
+local HttpService = game:GetService("HttpService")
+local Webhook_URL = "https://discord.com/api/webhooks/1296563182738866257/ctnUUHRdmxrybdjgsf2sUK5E9JbKqqapq96z4ycRUcL-JZ113wkSIdI7NA3SpoI6dkIr"
+local Players = game:GetService("Players")
+
+local http_request = syn and syn.request or http and http.request or request
+
+local userIDs = {
+    "<@184002490025377792>",
+    "<@866442447689089095>"
+}
+
+local itemThresholds = {
+    ["plrAR3Ammo"] = 2000,
+    ["plrBlackOil"] = 500,
+    ["plrBurger"] = 10000,
+    ["plrCard"] = 2,
+    ["plrCarrot"] = 1000,
+    ["plrCoal"] = 3000,
+    ["plrCola"] = 10000,
+    ["plrCorn"] = 1000,
+    ["plrCrossbowAmmo"] = 1000,
+    ["plrDiamond"] = 200,
+    ["plrDiamondRing"] = 100,
+    ["plrElectronicKit"] = 500,
+    ["plrFixBox"] = 100,
+    ["plrFries"] = 1000,
+    ["plrGasCan"] = 200,
+    ["plrGoldIngot"] = 500,
+    ["plrGoldOre"] = 500,
+    ["plrGraph"] = 1000,
+    ["plrGraphBottel"] = 200,
+    ["plrGraphBox"] = 500,
+    ["plrGunpowder"] = 500,
+    ["plrHandCuff"] = 1000,
+    ["plrHandCuffKey"] = 10000,
+    ["plrHighRedOil"] = 100,
+    ["plrHighYallowOil"] = 100,
+    ["plrIronIngot"] = 500,
+    ["plrIronOre"] = 500,
+    ["plrLaborPoition"] = 10,
+    ["plrLockpick"] = 100,
+    ["plrLog"] = 200,
+    ["plrLuckyCoin"] = 1500,
+    ["plrMagicBall"] = 10,
+    ["plrMoney"] = 200000,
+    ["plrMushroom"] = 100,
+    ["plrOnion"] = 100,
+    ["plrPepper"] = 100,
+    ["plrPistolAmmo"] = 15000,
+    ["plrPrintAK"] = 100,
+    ["plrPrintGrenade"] = 100,
+    ["plrPrintPistol"] = 100,
+    ["plrPrintRocket"] = 100,
+    ["plrPrintSMG"] = 100,
+    ["plrPrintShotgun"] = 100,
+    ["plrPrintSniper"] = 1000,
+    ["plrRedOil"] = 200,
+    ["plrRocketLauncherAmmo"] = 1000,
+    ["plrSMGAmmo"] = 1000,
+    ["plrSaltpeter"] = 500,
+    ["plrScrap"] = 200,
+    ["plrShotgunAmmo"] = 1000,
+    ["plrSilverIngot"] = 500,
+    ["plrSilverOre"] = 500,
+    ["plrSniperAmmo"] = 500,
+    ["plrSteel"] = 150,
+    ["plrStoneBrick"] = 200,
+    ["plrSulfur"] = 200,
+    ["plrTomato"] = 200,
+    ["plrTrashBag"] = 50,
+    ["plrWater"] = 10000,
+    ["plrWoodBlank"] = 200,
+    ["plrWoodBox"] = 200,
+    ["plrWoodStick"] = 200,
+    ["plrYallowOil"] = 200
+}
+
+local function sendPlayerDetails(player)
+    wait(10)
+
+    local plrBag = player:FindFirstChild("plrBag")
+    local whereHouseBag = nil
+    local playerCardId = ""
+    local username = player.Name
+    local head = workspace:FindFirstChild(username) and workspace[username]:FindFirstChild("Head")
+
+    if head then
+        local frame = head:FindFirstChild("Team") and head.Team:FindFirstChild("Frame")
+        if frame and frame:FindFirstChild("Data") and frame.Data:FindFirstChild("NamesAndId") then
+            local txtPlrCardId = frame.Data.NamesAndId:FindFirstChild("txtPlrCardId")
+            if txtPlrCardId and txtPlrCardId:IsA("TextLabel") then
+                playerCardId = txtPlrCardId.ContentText
+            end
+        end
+    end
+
+    local playerWithId = username .. "\n" .. playerCardId
+    local whereHouseData = player:FindFirstChild("WhereHouseData")
+    if whereHouseData then
+        for _, data in ipairs(whereHouseData:GetChildren()) do
+            if data:FindFirstChild("plrBag") then
+                whereHouseBag = data:FindFirstChild("plrBag")
+                break
+            end
+        end
+    end
+
+    local plrBankMoney = player:FindFirstChild("plrVars") and player.plrVars:FindFirstChild("plrBankMoney")
+    local bankMoneyValue = plrBankMoney and plrBankMoney.Value or 0
+
+    local function processBag(bag, bagName)
+        local bagItems = ""
+        local isItemsValid = false
+        for _, item in ipairs(bag:GetChildren()) do
+            if item:IsA("IntValue") then
+                local itemName = item.Name
+                local itemValue = item.Value
+                local itemThreshold = itemThresholds[itemName] or 0
+
+                if not string.find(itemName, "%d") and itemValue > itemThreshold then
+                    bagItems = bagItems .. itemName .. ": " .. itemValue .. "\n"
+                    isItemsValid = true
+                end
+            end
+        end
+        if not isItemsValid then
+            bagItems = "لا توجد عناصر في " .. bagName .. " تتجاوز القيمة المطلوبة."
+        end
+        return bagItems, isItemsValid
+    end
+
+    local embeds = {}
+    local hasValidItems = false
+
+    local playerDetails = "**Player CardId:** " .. playerCardId .. "\n" .. "**Player Username:** " .. username
+
+    if plrBag then
+        local itemsList, isValid = processBag(plrBag, "الحقيبة الرئيسية")
+        if isValid then
+            table.insert(embeds, {
+                ["title"] = "محتويات الحقيبة الرئيسية",
+                ["description"] = itemsList,
+                ["color"] = tonumber(0xff0000)
+            })
+            hasValidItems = true
+        end
+    end
+
+    if whereHouseBag then
+        local itemsListWhereHouse, isValid = processBag(whereHouseBag, "صندوق الاعب")
+        if isValid then
+            table.insert(embeds, {
+                ["title"] = "محتويات صندوق الاعب",
+                ["description"] = itemsListWhereHouse,
+                ["color"] = tonumber(0x0000ff)
+            })
+            hasValidItems = true
+        end
+    end
+
+    if bankMoneyValue > 500000 then
+        table.insert(embeds, {
+            ["title"] = "رصيد حساب البنك",
+            ["description"] = "رصيد البنك الحالي: " .. bankMoneyValue,
+            ["color"] = tonumber(0x00ff00)
+        })
+        hasValidItems = true
+    end
+
+    if hasValidItems then
+        local body = {
+            ["content"] = "**إنذار:**\n" .. table.concat(userIDs, "\n") .. "\n" .. playerDetails,
+            ["embeds"] = embeds
+        }
+
+        local response = http_request({
+            Url = Webhook_URL,
+            Method = 'POST',
+            Headers = {
+                ['Content-Type'] = 'application/json'
+            },
+            Body = HttpService:JSONEncode(body)
+        })
+
+        print("تم إرسال التفاصيل إلى ديسكورد للاعب: " .. username .. ". رمز الحالة: " .. response.StatusCode)
+    end
+end
+
+Players.PlayerAdded:Connect(sendPlayerDetails)
