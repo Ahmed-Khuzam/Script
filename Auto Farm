@@ -1,73 +1,93 @@
-local HttpService = game:GetService("HttpService")
-local Webhook_URL = "https://discord.com/api/webhooks/1296563182738866257/ctnUUHRdmxrybdjgsf2sUK5E9JbKqqapq96z4ycRUcL-JZ113wkSIdI7NA3SpoI6dkIr"
-local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
-local http_request = syn and syn.request or http and http.request or request
+local player = game.Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = gui
 
-local targetCardId = ""  
-local reason = ""  
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 110)
+frame.Position = UDim2.new(0.5, -150, 0.5, -55)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 4
+frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+frame.Parent = screenGui
 
-local function sendToDiscord(plrIdValue, playerName, reason, messages)
-    local content = "Card ID: " .. plrIdValue .. "\n" ..
-                    "Player Name: " .. playerName .. "\n" ..
-                    "Reason: " .. reason .. "\n\n" ..
-                    "Messages:\n" .. messages
+frame.ClipsDescendants = true
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
 
-    local body = {
-        ["embeds"] = {
-            {
-                ["title"] = "Player Information",
-                ["description"] = content,
-                ["color"] = tonumber(0xff0000)
-            }
-        }
+local innerFrame = Instance.new("Frame")
+innerFrame.Size = UDim2.new(1, -8, 1, -8)
+innerFrame.Position = UDim2.new(0, 4, 0, 4)
+innerFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+innerFrame.BorderSizePixel = 0
+innerFrame.Parent = frame
+
+local textLabel1 = Instance.new("TextLabel")
+textLabel1.Size = UDim2.new(1, -20, 0.33, -10)
+textLabel1.Position = UDim2.new(0, 10, 0, 10)
+textLabel1.Text = "The Script Made By N7x"
+textLabel1.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel1.TextSize = 16
+textLabel1.Font = Enum.Font.GothamBold
+textLabel1.TextStrokeTransparency = 0.6
+textLabel1.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+textLabel1.BackgroundTransparency = 1
+textLabel1.Parent = innerFrame
+
+local textLabel2 = Instance.new("TextLabel")
+textLabel2.Size = UDim2.new(1, -20, 0.33, -10)
+textLabel2.Position = UDim2.new(0, 10, 0.33, 10)
+textLabel2.Text = "ZeroSploit Server Link"
+textLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel2.TextSize = 14
+textLabel2.Font = Enum.Font.Gotham
+textLabel2.TextStrokeTransparency = 0.6
+textLabel2.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+textLabel2.BackgroundTransparency = 1
+textLabel2.Parent = innerFrame
+
+local textLabel3 = Instance.new("TextLabel")
+textLabel3.Size = UDim2.new(1, -20, 0.33, -10)
+textLabel3.Position = UDim2.new(0, 10, 0.66, 10)
+textLabel3.Text = "https://discord.com/invite/yka8gf94VK"
+textLabel3.TextColor3 = Color3.fromRGB(0, 170, 255)
+textLabel3.TextSize = 14
+textLabel3.Font = Enum.Font.Gotham
+textLabel3.TextStrokeTransparency = 0.6
+textLabel3.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+textLabel3.BackgroundTransparency = 1
+textLabel3.Parent = innerFrame
+
+setclipboard("https://discord.com/invite/yka8gf94VK")
+
+local tweenIn = TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -150, 0.5, -55)})
+local tweenOut = TweenService:Create(frame, TweenInfo.new(1, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -150, 1, 100)})
+
+tweenIn:Play()
+
+wait(3)
+tweenOut:Play()
+
+wait(1)
+screenGui:Destroy()
+
+RunService.Stepped:Connect(function()
+    local paths = {
+        workspace:WaitForChild("StudioPay"):WaitForChild("Money"),
+        workspace:WaitForChild("HouseRobb")
     }
 
-    local response = http_request({
-        Url = Webhook_URL,
-        Method = 'POST',
-        Headers = {
-            ['Content-Type'] = 'application/json'
-        },
-        Body = HttpService:JSONEncode(body)
-    })
-
-    print("Message sent to Discord. Status code: " .. response.StatusCode)
-end
-
-local function findPlayerByCardId(cardId)
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player:FindFirstChild("plrVars") and player.plrVars:FindFirstChild("plrCardId") then
-            local playerCardId = player.plrVars.plrCardId.Value
-            if tostring(playerCardId) == tostring(cardId) then
-                return player
+    for _, path in pairs(paths) do
+        for _, object in pairs(path:GetDescendants()) do
+            if object:IsA("ProximityPrompt") then
+                object.HoldDuration = 0
+                object.MaxActivationDistance = 10
+                object.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
             end
         end
     end
-    return nil
-end
-
--- قم بإضافة هذه الدالة للحصول على جميع الرسائل المرسلة من اللاعب
-local function getPlayerMessages(player)
-    local playerMessages = {}
-    for _, logMessage in ipairs(ChatLog) do
-        if logMessage:find(player.Name) then
-            table.insert(playerMessages, logMessage)
-        end
-    end
-    return table.concat(playerMessages, "\n")
-end
-
-local foundPlayer = findPlayerByCardId(targetCardId)
-
-if foundPlayer then
-    local playerCardId = foundPlayer.plrVars.plrCardId.Value
-    local playerName = foundPlayer.Name
-    local messages = getPlayerMessages(foundPlayer)
-
-    print("Found player: " .. playerName)
-
-    sendToDiscord(playerCardId, playerName, reason, messages)
-else
-    print("No player found with the specified plrCardId: " .. targetCardId)
-end
+end)
